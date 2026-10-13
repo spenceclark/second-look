@@ -3,9 +3,10 @@ import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
-    redirect: typeof search["redirect"] === "string" ? (search["redirect"] as string) : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { redirect?: string } => {
+    const redirect = search["redirect"];
+    return typeof redirect === "string" ? { redirect } : {};
+  },
   head: () => ({
     meta: [
       { title: "Sign in — Second Look" },
