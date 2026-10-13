@@ -32,6 +32,9 @@ export function ResetDemoButton() {
         const { error: storErr } = await supabase.storage.from("invoices").remove(paths);
         if (storErr) throw new Error(storErr.message);
       }
+      // Suppliers added during the demo are always 'pending' — seeded ones are 'verified'.
+      const { error: supErr } = await supabase.from("suppliers").delete().eq("status", "pending");
+      if (supErr) throw new Error(supErr.message);
       toast.success("Demo reset — seeded data kept");
       router.invalidate();
     } catch (e) {
