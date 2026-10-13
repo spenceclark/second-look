@@ -9,138 +9,141 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuditLogRouteImport } from './routes/audit-log'
-import { Route as InvoicesRouteImport } from './routes/invoices'
-import { Route as SuppliersRouteImport } from './routes/suppliers'
-import { Route as SuppliersIdRouteImport } from './routes/suppliers.$id'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedAuditLogRouteImport } from './routes/_authenticated/audit-log'
+import { Route as AuthenticatedInvoicesRouteImport } from './routes/_authenticated/invoices'
+import { Route as AuthenticatedSuppliersRouteImport } from './routes/_authenticated/suppliers'
+import { Route as AuthenticatedSuppliersIdRouteImport } from './routes/_authenticated/suppliers.$id'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/_authenticated/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuditLogRoute = AuditLogRouteImport.update({
-  id: '/audit-log',
+const AuthenticatedAuditLogRoute = AuthenticatedAuditLogRouteImport.update({
+  id: '/_authenticated/audit-log',
   path: '/audit-log',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InvoicesRoute = InvoicesRouteImport.update({
-  id: '/invoices',
+const AuthenticatedInvoicesRoute = AuthenticatedInvoicesRouteImport.update({
+  id: '/_authenticated/invoices',
   path: '/invoices',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SuppliersRoute = SuppliersRouteImport.update({
-  id: '/suppliers',
+const AuthenticatedSuppliersRoute = AuthenticatedSuppliersRouteImport.update({
+  id: '/_authenticated/suppliers',
   path: '/suppliers',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SuppliersIdRoute = SuppliersIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => SuppliersRoute,
-} as any)
+const AuthenticatedSuppliersIdRoute =
+  AuthenticatedSuppliersIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedSuppliersRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/audit-log': typeof AuditLogRoute
-  '/invoices': typeof InvoicesRoute
-  '/suppliers': typeof SuppliersRouteWithChildren
-  '/suppliers/$id': typeof SuppliersIdRoute
+  '/audit-log': typeof AuthenticatedAuditLogRoute
+  '/invoices': typeof AuthenticatedInvoicesRoute
+  '/suppliers': typeof AuthenticatedSuppliersRouteWithChildren
+  '/': typeof AuthenticatedIndexRoute
+  '/suppliers/$id': typeof AuthenticatedSuppliersIdRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/audit-log': typeof AuditLogRoute
-  '/invoices': typeof InvoicesRoute
-  '/suppliers': typeof SuppliersRouteWithChildren
-  '/suppliers/$id': typeof SuppliersIdRoute
+  '/audit-log': typeof AuthenticatedAuditLogRoute
+  '/invoices': typeof AuthenticatedInvoicesRoute
+  '/suppliers': typeof AuthenticatedSuppliersRouteWithChildren
+  '/': typeof AuthenticatedIndexRoute
+  '/suppliers/$id': typeof AuthenticatedSuppliersIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/audit-log': typeof AuditLogRoute
-  '/invoices': typeof InvoicesRoute
-  '/suppliers': typeof SuppliersRouteWithChildren
-  '/suppliers/$id': typeof SuppliersIdRoute
+  '/_authenticated/audit-log': typeof AuthenticatedAuditLogRoute
+  '/_authenticated/invoices': typeof AuthenticatedInvoicesRoute
+  '/_authenticated/suppliers': typeof AuthenticatedSuppliersRouteWithChildren
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/suppliers/$id': typeof AuthenticatedSuppliersIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/audit-log' | '/invoices' | '/suppliers' | '/suppliers/$id'
+  fullPaths: '/audit-log' | '/invoices' | '/suppliers' | '/' | '/suppliers/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/audit-log' | '/invoices' | '/suppliers' | '/suppliers/$id'
+  to: '/audit-log' | '/invoices' | '/suppliers' | '/' | '/suppliers/$id'
   id:
     | '__root__'
-    | '/'
-    | '/audit-log'
-    | '/invoices'
-    | '/suppliers'
-    | '/suppliers/$id'
+    | '/_authenticated/audit-log'
+    | '/_authenticated/invoices'
+    | '/_authenticated/suppliers'
+    | '/_authenticated/'
+    | '/_authenticated/suppliers/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AuditLogRoute: typeof AuditLogRoute
-  InvoicesRoute: typeof InvoicesRoute
-  SuppliersRoute: typeof SuppliersRouteWithChildren
+  AuthenticatedAuditLogRoute: typeof AuthenticatedAuditLogRoute
+  AuthenticatedInvoicesRoute: typeof AuthenticatedInvoicesRoute
+  AuthenticatedSuppliersRoute: typeof AuthenticatedSuppliersRouteWithChildren
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/audit-log': {
-      id: '/audit-log'
+    '/_authenticated/audit-log': {
+      id: '/_authenticated/audit-log'
       path: '/audit-log'
       fullPath: '/audit-log'
-      preLoaderRoute: typeof AuditLogRouteImport
+      preLoaderRoute: typeof AuthenticatedAuditLogRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/invoices': {
-      id: '/invoices'
+    '/_authenticated/invoices': {
+      id: '/_authenticated/invoices'
       path: '/invoices'
       fullPath: '/invoices'
-      preLoaderRoute: typeof InvoicesRouteImport
+      preLoaderRoute: typeof AuthenticatedInvoicesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/suppliers': {
-      id: '/suppliers'
+    '/_authenticated/suppliers': {
+      id: '/_authenticated/suppliers'
       path: '/suppliers'
       fullPath: '/suppliers'
-      preLoaderRoute: typeof SuppliersRouteImport
+      preLoaderRoute: typeof AuthenticatedSuppliersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/suppliers/$id': {
-      id: '/suppliers/$id'
+    '/_authenticated/suppliers/$id': {
+      id: '/_authenticated/suppliers/$id'
       path: '/$id'
       fullPath: '/suppliers/$id'
-      preLoaderRoute: typeof SuppliersIdRouteImport
-      parentRoute: typeof SuppliersRoute
+      preLoaderRoute: typeof AuthenticatedSuppliersIdRouteImport
+      parentRoute: typeof AuthenticatedSuppliersRoute
     }
   }
 }
 
-interface SuppliersRouteChildren {
-  SuppliersIdRoute: typeof SuppliersIdRoute
+interface AuthenticatedSuppliersRouteChildren {
+  AuthenticatedSuppliersIdRoute: typeof AuthenticatedSuppliersIdRoute
 }
 
-const SuppliersRouteChildren: SuppliersRouteChildren = {
-  SuppliersIdRoute: SuppliersIdRoute,
-}
+const AuthenticatedSuppliersRouteChildren: AuthenticatedSuppliersRouteChildren =
+  {
+    AuthenticatedSuppliersIdRoute: AuthenticatedSuppliersIdRoute,
+  }
 
-const SuppliersRouteWithChildren = SuppliersRoute._addFileChildren(
-  SuppliersRouteChildren,
-)
+const AuthenticatedSuppliersRouteWithChildren =
+  AuthenticatedSuppliersRoute._addFileChildren(
+    AuthenticatedSuppliersRouteChildren,
+  )
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AuditLogRoute: AuditLogRoute,
-  InvoicesRoute: InvoicesRoute,
-  SuppliersRoute: SuppliersRouteWithChildren,
+  AuthenticatedAuditLogRoute: AuthenticatedAuditLogRoute,
+  AuthenticatedInvoicesRoute: AuthenticatedInvoicesRoute,
+  AuthenticatedSuppliersRoute: AuthenticatedSuppliersRouteWithChildren,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

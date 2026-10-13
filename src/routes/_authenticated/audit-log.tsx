@@ -26,7 +26,7 @@ const EVENT_LABELS: Record<string, string> = {
   history_upload: "Past invoice added to history",
 };
 
-export const Route = createFileRoute("/audit-log")({
+export const Route = createFileRoute("/_authenticated/audit-log")({
   head: () => ({
     meta: [
       { title: "Audit log — Second Look" },
