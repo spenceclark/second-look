@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791913925842,
+      "tag": "0000_second_look_schema_and_seed",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791913940204,
+      "tag": "0001_storage_policies_invoices_bucket",
+      "breakpoints": true
+    }
+  ]
+}
