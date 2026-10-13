@@ -130,10 +130,16 @@ const VAGUE_ITEMS = ["adjustment", "outstanding balance", "balance brought forwa
 export function runChecks(
   extracted: ExtractedInvoice,
   supplier: SupplierRecord,
-  pastInvoices: { total: number | null; extracted_json: ExtractedInvoice | null }[],
+  pastInvoices: { total: number | null; extracted_json: ExtractedInvoice | null; status?: string | null }[],
   rawText: string,
 ): Flag[] {
   const flags: Flag[] = [];
+
+  // History = paid or approved invoices only. Pending/held rows (including the
+  // invoice being checked, or earlier aborted runs) must not skew the average.
+  const history = pastInvoices.filter(
+    (p) => p.status === undefined || p.status === null || p.status === "paid" || p.status === "approved",
+  );
 
   // Bank details
   const fileSort = normalizeDigits(supplier.sort_code);
@@ -214,7 +220,7 @@ export function runChecks(
   }
 
   // Total vs average of past invoices
-  const totals = pastInvoices
+  const totals = history
     .map((p) => (typeof p.total === "number" ? p.total : Number(p.total)))
     .filter((t) => Number.isFinite(t) && t > 0);
   if (totals.length > 0 && typeof extracted.total === "number" && extracted.total > 0) {
@@ -274,7 +280,7 @@ export function runChecks(
 
   // New / vague line items
   const pastDescriptions = new Set(
-    pastInvoices.flatMap((p) =>
+    history.flatMap((p) =>
       (p.extracted_json?.line_items ?? []).map((li) => normalizeName(li.description)),
     ),
   );
