@@ -15,18 +15,22 @@ export function ResetDemoButton() {
     setBusy(true);
     try {
       // Delete audit log first (FK), then non-history invoices.
-      await supabase.from("audit_log").delete().not("id", "is", null);
-      const { data: testInvoices } = await supabase
+      const { error: auditErr } = await supabase.from("audit_log").delete().not("id", "is", null);
+      if (auditErr) throw new Error(auditErr.message);
+      const { data: testInvoices, error: selErr } = await supabase
         .from("invoices")
         .select("id, pdf_path, extracted_json")
         .or("extracted_json->>source.is.null,extracted_json->>source.neq.history");
+      if (selErr) throw new Error(selErr.message);
       const ids = (testInvoices ?? []).map((i) => i.id);
       const paths = (testInvoices ?? []).map((i) => i.pdf_path).filter((p): p is string => !!p);
       if (ids.length > 0) {
-        await supabase.from("invoices").delete().in("id", ids);
+        const { error: invErr } = await supabase.from("invoices").delete().in("id", ids);
+        if (invErr) throw new Error(invErr.message);
       }
       if (paths.length > 0) {
-        await supabase.storage.from("invoices").remove(paths);
+        const { error: storErr } = await supabase.storage.from("invoices").remove(paths);
+        if (storErr) throw new Error(storErr.message);
       }
       toast.success("Demo reset — seeded data kept");
       router.invalidate();
