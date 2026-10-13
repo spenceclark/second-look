@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const MODEL = "google/gemini-3-flash-preview";
@@ -41,6 +42,7 @@ async function callGateway(messages: { role: string; content: string }[]): Promi
 }
 
 export const extractInvoiceData = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: { text: string }) => input)
   .handler(async ({ data }) => {
     const content = await callGateway([
@@ -63,6 +65,7 @@ export const extractInvoiceData = createServerFn({ method: "POST" })
   });
 
 export const summarizeFlags = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: { flags: { severity: string; title: string; detail?: string }[]; verdict: string }) => input)
   .handler(async ({ data }) => {
     const list = data.flags
