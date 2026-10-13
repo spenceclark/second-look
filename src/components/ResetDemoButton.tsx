@@ -9,25 +9,32 @@ export function ResetDemoButton() {
   const router = useRouter();
 
   const reset = async () => {
-    if (!window.confirm("Reset the demo? Test invoices and the audit log will be deleted. Suppliers, staff and supplier history are kept.")) {
+    if (!window.confirm("Reset the demo? Test invoices, the audit log and any suppliers added during the demo will be deleted. Staff, verified suppliers and supplier history are kept.")) {
       return;
     }
     setBusy(true);
     try {
       // Delete audit log first (FK), then non-history invoices.
-      await supabase.from("audit_log").delete().not("id", "is", null);
-      const { data: testInvoices } = await supabase
+      const { error: auditErr } = await supabase.from("audit_log").delete().not("id", "is", null);
+      if (auditErr) throw new Error(auditErr.message);
+      const { data: testInvoices, error: selErr } = await supabase
         .from("invoices")
         .select("id, pdf_path, extracted_json")
         .or("extracted_json->>source.is.null,extracted_json->>source.neq.history");
+      if (selErr) throw new Error(selErr.message);
       const ids = (testInvoices ?? []).map((i) => i.id);
       const paths = (testInvoices ?? []).map((i) => i.pdf_path).filter((p): p is string => !!p);
       if (ids.length > 0) {
-        await supabase.from("invoices").delete().in("id", ids);
+        const { error: invErr } = await supabase.from("invoices").delete().in("id", ids);
+        if (invErr) throw new Error(invErr.message);
       }
       if (paths.length > 0) {
-        await supabase.storage.from("invoices").remove(paths);
+        const { error: storErr } = await supabase.storage.from("invoices").remove(paths);
+        if (storErr) throw new Error(storErr.message);
       }
+      // Suppliers added during the demo are always 'pending' — seeded ones are 'verified'.
+      const { error: supErr } = await supabase.from("suppliers").delete().eq("status", "pending");
+      if (supErr) throw new Error(supErr.message);
       toast.success("Demo reset — seeded data kept");
       router.invalidate();
     } catch (e) {

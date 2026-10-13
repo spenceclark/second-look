@@ -1,0 +1,1 @@
+CREATE POLICY audit_delete_auth ON public.audit_log FOR DELETE TO authenticated USING (true);
