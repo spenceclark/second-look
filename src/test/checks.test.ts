@@ -145,3 +145,21 @@ describe("diffSegments", () => {
     expect(segs.map((s) => s.text).join("")).toBe("hartwellprnt.co.uk");
   });
 });
+
+describe("history filtering", () => {
+  it("averages only paid/approved invoices — pending and held rows are ignored", () => {
+    // 3 paid invoices avg £2,287.20; a pending £8,000 and held £4,383.60 must not skew it.
+    const mixed = [
+      { total: 2238.0, status: "paid", extracted_json: null },
+      { total: 2244.0, status: "paid", extracted_json: null },
+      { total: 2379.6, status: "approved", extracted_json: null },
+      { total: 8000.0, status: "pending", extracted_json: null },
+      { total: 4383.6, status: "held", extracted_json: null },
+    ];
+    // £4,383.60 is 1.92× the paid/approved average → the outlier flag must fire.
+    const flags = runChecks({ ...cleanInvoice, total: 4383.6 }, hartwell, mixed, "");
+    const outlier = flags.find((f) => f.id === "total-outlier");
+    expect(outlier).toBeDefined();
+    expect(outlier?.was).toBe("Average £2287.20");
+  });
+});
