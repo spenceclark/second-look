@@ -30,7 +30,13 @@ interface PastInvoice {
   id: string;
   total: number | null;
   pdf_path: string | null;
+  status: string | null;
   extracted_json: ExtractedInvoice | null;
+}
+
+/** History that counts for comparisons: paid or approved invoices only. */
+function isHistory(p: PastInvoice): boolean {
+  return p.status === "paid" || p.status === "approved";
 }
 
 const FIELD_LABELS: [keyof ExtractedInvoice, string][] = [
@@ -137,7 +143,7 @@ export function PayInvoiceFlow() {
       if (match) {
         const { data: past } = await supabase
           .from("invoices")
-          .select("id, total, pdf_path, extracted_json")
+          .select("id, total, pdf_path, status, extracted_json")
           .eq("supplier_id", match.id)
           .neq("id", invoiceId)
           .order("created_at", { ascending: false });
@@ -433,7 +439,7 @@ export function PayInvoiceFlow() {
                 <h2 className="text-lg font-semibold text-foreground">
                   Matched: {supplier.legal_name}{" "}
                   <span className="text-sm font-normal text-muted-foreground">
-                    ({supplier.status}, {pastInvoices.length} past invoice{pastInvoices.length === 1 ? "" : "s"})
+                    ({supplier.status}, {pastInvoices.filter(isHistory).length} past invoice{pastInvoices.filter(isHistory).length === 1 ? "" : "s"})
                   </span>
                 </h2>
               </div>
@@ -478,7 +484,7 @@ export function PayInvoiceFlow() {
                     {f.detail && <p className="mt-2 text-sm text-muted-foreground">{f.detail}</p>}
                     {f.id === "total-outlier" && (
                       <div className="mt-2">
-                        <Sparkline values={pastInvoices.map((p) => Number(p.total)).filter((t) => t > 0).reverse()} />
+                        <Sparkline values={pastInvoices.filter(isHistory).map((p) => Number(p.total)).filter((t) => t > 0).reverse()} />
                         <p className="text-xs text-muted-foreground">Past invoice totals</p>
                       </div>
                     )}
