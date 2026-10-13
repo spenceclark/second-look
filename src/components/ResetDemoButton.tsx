@@ -9,7 +9,7 @@ export function ResetDemoButton() {
   const router = useRouter();
 
   const reset = async () => {
-    if (!window.confirm("Reset the demo? Test invoices and the audit log will be deleted. Suppliers, staff and supplier history are kept.")) {
+    if (!window.confirm("Reset the demo? Test invoices, the audit log and any suppliers added during the demo will be deleted. Staff, verified suppliers and supplier history are kept.")) {
       return;
     }
     setBusy(true);
