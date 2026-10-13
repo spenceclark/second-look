@@ -15,7 +15,7 @@ interface InvoiceRow {
   suppliers: { legal_name: string } | null;
 }
 
-export const Route = createFileRoute("/invoices")({
+export const Route = createFileRoute("/_authenticated/invoices")({
   head: () => ({
     meta: [
       { title: "Invoices — Second Look" },

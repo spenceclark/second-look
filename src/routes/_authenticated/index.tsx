@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PayInvoiceFlow } from "@/components/PayInvoiceFlow";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "Pay an invoice — Second Look" },

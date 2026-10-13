@@ -4,16 +4,19 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useNavigate,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Toaster } from "sonner";
+import type { User } from "@supabase/supabase-js";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ResetDemoButton } from "../components/ResetDemoButton";
+import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
   return (
@@ -127,6 +130,27 @@ const NAV = [
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+      setUser(session?.user ?? null);
+      router.invalidate();
+      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+    });
+    return () => sub.subscription.unsubscribe();
+  }, [router, queryClient]);
+
+  async function handleSignOut() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -151,7 +175,26 @@ function RootComponent() {
                 </Link>
               ))}
             </nav>
-            <ResetDemoButton />
+            {user ? (
+              <div className="flex items-center gap-3">
+                <ResetDemoButton />
+                <span className="hidden text-xs text-navy-foreground/70 sm:inline">{user.email}</span>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="rounded-md border border-navy-foreground/30 px-3 py-1.5 text-sm text-navy-foreground transition-colors hover:bg-navy-foreground/10"
+                >
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/auth"
+                className="rounded-md border border-navy-foreground/30 px-3 py-1.5 text-sm text-navy-foreground transition-colors hover:bg-navy-foreground/10"
+              >
+                Sign in
+              </Link>
+            )}
           </div>
         </header>
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">

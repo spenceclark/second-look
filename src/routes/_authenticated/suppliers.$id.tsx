@@ -19,7 +19,7 @@ interface HistoryInvoice {
   created_at: string;
 }
 
-export const Route = createFileRoute("/suppliers/$id")({
+export const Route = createFileRoute("/_authenticated/suppliers/$id")({
   head: () => ({
     meta: [
       { title: "Supplier — Second Look" },

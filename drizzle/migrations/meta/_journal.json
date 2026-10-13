@@ -15,6 +15,13 @@
       "when": 1791913940204,
       "tag": "0001_storage_policies_invoices_bucket",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791915679816,
+      "tag": "0002_restrict_access_to_authenticated_users",
+      "breakpoints": true
     }
   ]
 }

@@ -12,7 +12,7 @@ interface SupplierRow {
   invoices: { count: number }[];
 }
 
-export const Route = createFileRoute("/suppliers")({
+export const Route = createFileRoute("/_authenticated/suppliers")({
   head: () => ({
     meta: [
       { title: "Suppliers — Second Look" },
