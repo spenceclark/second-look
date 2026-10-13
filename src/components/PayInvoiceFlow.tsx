@@ -498,7 +498,7 @@ export function PayInvoiceFlow() {
           )}
 
           <DecisionBar
-            onApprove={() => setStep("decide")}
+            onApprove={() => (needsVerification ? setStep("decide") : void approveInvoice())}
             onHold={holdInvoice}
             approveLabel={needsVerification ? "Approve for payment…" : "Approve for payment"}
           />
