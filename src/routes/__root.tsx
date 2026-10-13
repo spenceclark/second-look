@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useNavigate,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
@@ -174,7 +175,26 @@ function RootComponent() {
                 </Link>
               ))}
             </nav>
-            <ResetDemoButton />
+            {user ? (
+              <div className="flex items-center gap-3">
+                <ResetDemoButton />
+                <span className="hidden text-xs text-navy-foreground/70 sm:inline">{user.email}</span>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="rounded-md border border-navy-foreground/30 px-3 py-1.5 text-sm text-navy-foreground transition-colors hover:bg-navy-foreground/10"
+                >
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/auth"
+                className="rounded-md border border-navy-foreground/30 px-3 py-1.5 text-sm text-navy-foreground transition-colors hover:bg-navy-foreground/10"
+              >
+                Sign in
+              </Link>
+            )}
           </div>
         </header>
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
