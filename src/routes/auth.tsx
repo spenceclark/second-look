@@ -183,7 +183,7 @@ function switchMode(setMode: (m: Mode) => void, m: Mode) {
   setMode(m);
 }
 
-function safeTarget(redirect: string): string {
+function safeTarget(redirect: string | undefined): string {
   // Only allow same-origin paths; never bounce to an external URL or back to /auth.
   if (!redirect.startsWith("/") || redirect.startsWith("//") || redirect.startsWith("/auth")) return "/";
   return redirect;
